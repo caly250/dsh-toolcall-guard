@@ -93,7 +93,11 @@ cd <profile> && pnpm install
 重启 DSH 应用（或触发一次 profile 重载）。DSH 会把 `dsh-toolcall-guard` 当 bundle 加载，
 并应用它的 `cordis.patch.yml`（插入 `toolcall-guard` 行）。
 
-### 方式 B —— 把行写进 profile 的 patch（不用 bundle 条目）
+### 方式 B —— 把行写进 profile 的 patch（模块必须已能被解析到）
+
+`cordis.patch.yml` 里的行是**按模块名引用插件**的，所以这种方式的前提是
+`dsh-toolcall-guard` 已经能从 profile 的 `node_modules` 里解析到（例如先 `pnpm add`，
+或按方式 A link 好）。解析不到就用方式 A。
 
 把下面这段追加到 `<profile>/cordis.patch.yml` 并保存（DSH 的 `patchReload: live` 会热加载，无需重启）：
 
@@ -114,13 +118,15 @@ cd <profile> && pnpm install
 
 注意：**同一个 `id` 不要既写在 bundle 里又写在 patch 里** —— 会被插两次。
 
-### 方式 C —— npm（包名 `dsh-toolcall-guard`）
+### 方式 C —— npm
+
+这个包目前**还没发布到 npm**。如果你想发布自己的 fork：
 
 ```bash
-cd <profile> && pnpm add dsh-toolcall-guard
+npm publish   # 在仓库根目录，先 npm login
 ```
 
-…然后把 `"dsh-toolcall-guard"` 加进 `dsh.profile.bundles`，同方式 A。
+…然后在 `<profile>` 里 `pnpm add dsh-toolcall-guard`，并按方式 A 加进 `dsh.profile.bundles`。
 
 ## 验证是否真的在跑
 

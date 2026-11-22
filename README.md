@@ -1,6 +1,6 @@
 # dsh-toolcall-guard
 
-A [DeepSeek Harness](https://github.com/deepseek-ai) (DSH) plugin that catches the case where a
+A DeepSeek Harness (DSH) plugin that catches the case where a
 model **writes a tool call into the reply as text** instead of returning a structured tool call,
 and turns that broken attempt into a retryable failure so the step is re-run automatically.
 
@@ -106,10 +106,15 @@ cd <profile> && pnpm install
 Restart the DSH app (or trigger a profile reload). DSH will pick up `dsh-toolcall-guard` as a
 bundle and apply its `cordis.patch.yml`, which inserts the `toolcall-guard` row.
 
-### Option B — write the row into the profile patch (no bundle entry)
+### Option B — write the row into the profile patch (module must already be resolvable)
 
-If you prefer the live-reload path, append this block to `<profile>/cordis.patch.yml` and save
-(DSH's `patchReload: live` picks it up without a restart):
+`cordis.patch.yml` rows refer to a plugin **by module name**, so this option assumes
+`dsh-toolcall-guard` can already be resolved from the profile's `node_modules` (for example after
+`pnpm add dsh-toolcall-guard`, or after linking it as in Option A). If it cannot be resolved, use
+Option A.
+
+Append this block to `<profile>/cordis.patch.yml` and save (DSH's `patchReload: live` picks it up
+without a restart):
 
 ```yaml
 - insert:
@@ -128,13 +133,16 @@ If you prefer the live-reload path, append this block to `<profile>/cordis.patch
 
 Do **not** declare the same `id` both as a bundle and as a patch row — that inserts it twice.
 
-### Option C — npm (the package is published as `dsh-toolcall-guard`)
+### Option C — npm
+
+The package is not on the npm registry yet. If you want to publish your own fork:
 
 ```bash
-cd <profile> && pnpm add dsh-toolcall-guard
+npm publish   # from the repo root, after `npm login`
 ```
 
-…then add `"dsh-toolcall-guard"` to `dsh.profile.bundles` as in Option A.
+…then `pnpm add dsh-toolcall-guard` inside `<profile>` and add it to `dsh.profile.bundles` as in
+Option A.
 
 ## Verify it is running
 
