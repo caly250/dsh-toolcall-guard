@@ -1,0 +1,34 @@
+# dsh-toolcall-guard — DSH bundle patch
+#
+# Detects models that emit a tool call as assistant text (e.g. a
+# <tool_call>{...} tag in the reply body) and rewrites that attempt into
+# a retryable EMPTY_RESPONSE, so dsh-llm-retry re-runs the step instead of
+# showing raw tags in the chat.
+#
+# Cost: detection is a local string scan — no prompt text, no extra context,
+# so it costs zero tokens by itself. Only a genuinely malformed turn triggers
+# a retry, and such a turn produced nothing usable anyway.
+#
+# False-positive safety: a tag only counts when a JSON payload follows it, and
+# a bare JSON key only counts when a "name" field follows. A turn that also
+# carries real structured tool calls is never rewritten
+# (rewriteWhenRealToolCallsPresent: false).
+#
+# To observe before enforcing: set logOnly: true. The plugin then only logs
+# what it would have rewritten and lets the response through untouched.
+#
+# Empty providerPattern = every provider. Detection is strict enough to apply
+# globally; narrow it with providerPattern / modelPattern if you prefer.
+
+- insert:
+    - id: toolcall-guard
+      name: dsh-toolcall-guard
+      config:
+        enabled: true
+        providerPattern: ''
+        modelPattern: ''
+        targetCode: EMPTY_RESPONSE
+        maxScanChars: 200000
+        rewriteWhenRealToolCallsPresent: false
+        logOnly: false
+        verbose: true

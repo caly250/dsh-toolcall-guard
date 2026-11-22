@@ -1,0 +1,49 @@
+{
+  "name": "dsh-toolcall-guard",
+  "version": "1.0.0",
+  "description": "DSH plugin: detect a model that emits a tool call as assistant text and turn that attempt into a retryable EMPTY_RESPONSE, so dsh-llm-retry re-runs the step instead of showing raw tags in the chat.",
+  "type": "module",
+  "main": "index.js",
+  "exports": {
+    ".": "./index.js"
+  },
+  "files": [
+    "index.js",
+    "cordis.patch.yml",
+    "README.md",
+    "README.zh.md",
+    "LICENSE"
+  ],
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    }
+  },
+  "scripts": {
+    "test": "node --test"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "keywords": [
+    "dsh",
+    "dsh-plugin",
+    "deepseek-harness",
+    "llm",
+    "tool-call",
+    "tool-calling",
+    "retry",
+    "guard",
+    "openai-compatible"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/caly250/dsh-toolcall-guard.git"
+  },
+  "bugs": {
+    "url": "https://github.com/caly250/dsh-toolcall-guard/issues"
+  },
+  "homepage": "https://github.com/caly250/dsh-toolcall-guard#readme",
+  "author": "caly250",
+  "license": "MIT"
+}
